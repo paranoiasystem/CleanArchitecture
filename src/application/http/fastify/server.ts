@@ -1,20 +1,21 @@
-import fastify from 'fastify'
+import "reflect-metadata";
+import fastify from 'fastify';
+import {container} from "tsyringe";
 import {
     CreateBankAccountUseCase, CreateBankAccountUseCaseImpl,
     CreateUserUseCase,
-    CreateUserUseCaseImpl,
-    IBankAccountRepository,
-    IUserRepository, MakeDepositUseCase, MakeDepositUseCaseImpl
+    CreateUserUseCaseImpl,MakeDepositUseCase, MakeDepositUseCaseImpl
 } from "../../../core";
 import {BankAccountRepositoryInMemory, UserRepositoryInMemory} from "../../../infrastructure";
 
 const server = fastify()
 
-const userRepository: IUserRepository = new UserRepositoryInMemory();
-const createUserUseCase: CreateUserUseCase = new CreateUserUseCaseImpl(userRepository);
-const bankAccountRepository: IBankAccountRepository = new BankAccountRepositoryInMemory();
-const createBankAccountUseCase: CreateBankAccountUseCase = new CreateBankAccountUseCaseImpl(bankAccountRepository, userRepository);
-const makeDepositUseCase: MakeDepositUseCase = new MakeDepositUseCaseImpl(bankAccountRepository);
+container.registerInstance("userRepository", new UserRepositoryInMemory());
+container.registerInstance("bankAccountRepository", new BankAccountRepositoryInMemory());
+const createUserUseCase: CreateUserUseCase = container.resolve(CreateUserUseCaseImpl);
+const createBankAccountUseCase: CreateBankAccountUseCase = container.resolve(CreateBankAccountUseCaseImpl);
+const makeDepositUseCase: MakeDepositUseCase = container.resolve(MakeDepositUseCaseImpl);
+
 
 server.post<{
     Body: {
