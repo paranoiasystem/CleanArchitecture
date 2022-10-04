@@ -1,3 +1,4 @@
+import "reflect-metadata"
 import {IUserRepository, User} from "../../core";
 import {UserRepositoryInMemory} from "../../infrastructure";
 

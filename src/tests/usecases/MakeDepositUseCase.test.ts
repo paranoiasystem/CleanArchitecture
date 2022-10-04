@@ -1,19 +1,21 @@
+import "reflect-metadata";
+import {container, inject} from "tsyringe";
 import {
     BankAccount,
     CreateBankAccountUseCase, CreateBankAccountUseCaseImpl,
-    CreateUserUseCase, CreateUserUseCaseImpl,
-    IBankAccountRepository,
-    IUserRepository, MakeDepositUseCase, MakeDepositUseCaseImpl,
+    CreateUserUseCase, CreateUserUseCaseImpl, IBankAccountRepository,
+    MakeDepositUseCase, MakeDepositUseCaseImpl,
     User
 } from "../../core";
 import {BankAccountRepositoryInMemory, UserRepositoryInMemory} from "../../infrastructure";
 
 describe('Make Deposit Use Case Test', () => {
-    const bankAccountRepositoryInMemory: IBankAccountRepository = new BankAccountRepositoryInMemory();
-    const userRepositoryInMemory: IUserRepository = new UserRepositoryInMemory();
-    const createUserUseCase: CreateUserUseCase = new CreateUserUseCaseImpl(userRepositoryInMemory);
-    const createBankAccountUseCase: CreateBankAccountUseCase = new CreateBankAccountUseCaseImpl(bankAccountRepositoryInMemory, userRepositoryInMemory);
-    const makeDepositUseCase: MakeDepositUseCase = new MakeDepositUseCaseImpl(bankAccountRepositoryInMemory);
+    container.registerInstance("userRepository", new UserRepositoryInMemory());
+    const createUserUseCase: CreateUserUseCase = container.resolve(CreateUserUseCaseImpl);
+    container.registerInstance("bankAccountRepository", new BankAccountRepositoryInMemory());
+    const createBankAccountUseCase: CreateBankAccountUseCase = container.resolve(CreateBankAccountUseCaseImpl);
+    const makeDepositUseCase: MakeDepositUseCase = container.resolve(MakeDepositUseCaseImpl);
+    const bankAccountRepository: IBankAccountRepository = container.resolve('bankAccountRepository');
     let user: User;
     let bankAccount: BankAccount;
 
@@ -24,7 +26,7 @@ describe('Make Deposit Use Case Test', () => {
 
     it('should make a deposit', async () => {
         await makeDepositUseCase.execute(100, user.id);
-        const tempBankAccount = await bankAccountRepositoryInMemory.getByAccountId(bankAccount.id);
+        const tempBankAccount = await bankAccountRepository.getByAccountId(bankAccount.id);
         expect(tempBankAccount).toHaveProperty("id");
         expect(tempBankAccount).toHaveProperty("balance", 200);
         expect(tempBankAccount).toHaveProperty("user_id", user.id);

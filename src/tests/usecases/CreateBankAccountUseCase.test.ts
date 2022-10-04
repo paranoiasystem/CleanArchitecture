@@ -1,12 +1,18 @@
-import {IBankAccountRepository, IUserRepository, User,  CreateBankAccountUseCase, CreateBankAccountUseCaseImpl, CreateUserUseCase, CreateUserUseCaseImpl } from "../../core";
+import "reflect-metadata";
+import {container} from "tsyringe";
 import { BankAccountRepositoryInMemory, UserRepositoryInMemory } from "../../infrastructure";
-
+import {
+    CreateBankAccountUseCase,
+    CreateBankAccountUseCaseImpl,
+    CreateUserUseCase,
+    CreateUserUseCaseImpl, User
+} from "../../core";
 
 describe('Create Bank Account Use Case Test', () => {
-    const bankAccountRepositoryInMemory: IBankAccountRepository = new BankAccountRepositoryInMemory();
-    const userRepositoryInMemory: IUserRepository = new UserRepositoryInMemory();
-    const createUserUseCase: CreateUserUseCase = new CreateUserUseCaseImpl(userRepositoryInMemory);
-    const createBankAccountUseCase: CreateBankAccountUseCase = new CreateBankAccountUseCaseImpl(bankAccountRepositoryInMemory, userRepositoryInMemory);
+    container.registerInstance("userRepository", new UserRepositoryInMemory());
+    const createUserUseCase: CreateUserUseCase = container.resolve(CreateUserUseCaseImpl);
+    container.registerInstance("bankAccountRepository", new BankAccountRepositoryInMemory());
+    const createBankAccountUseCase: CreateBankAccountUseCase = container.resolve(CreateBankAccountUseCaseImpl);
     let user: User;
 
     beforeAll(async () => {

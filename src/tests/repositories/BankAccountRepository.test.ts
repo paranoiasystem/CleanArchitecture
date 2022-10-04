@@ -1,3 +1,4 @@
+import "reflect-metadata"
 import {BankAccount, IBankAccountRepository} from "../../core";
 import {BankAccountRepositoryInMemory} from "../../infrastructure";
 
