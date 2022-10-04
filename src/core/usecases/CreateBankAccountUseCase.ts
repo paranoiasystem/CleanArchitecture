@@ -2,15 +2,17 @@ import {IBankAccountRepository} from "../interfaces/IBankAccountRepository";
 import {IUserRepository} from "../interfaces/IUserRepository";
 import {BankAccount} from "../entities/BankAccount";
 import {AsyncUseCase} from "../base/UseCase.abstract";
+import {inject, injectable} from "tsyringe";
 
 export abstract class CreateBankAccountUseCase implements AsyncUseCase<BankAccount> {
     abstract execute(balance: number, user_id: string): Promise<BankAccount>;
 }
 
+@injectable()
 export class CreateBankAccountUseCaseImpl implements CreateBankAccountUseCase {
     constructor(
-        private bankAccountRepository: IBankAccountRepository,
-        private userRepository: IUserRepository
+        @inject("bankAccountRepository") private bankAccountRepository: IBankAccountRepository,
+        @inject("userRepository") private userRepository: IUserRepository
     ) {}
 
     async execute(balance: number, user_id: string): Promise<BankAccount> {

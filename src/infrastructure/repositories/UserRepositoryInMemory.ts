@@ -1,7 +1,9 @@
 import { IUserRepository } from "../../core";
 import { User } from "../../core";
 import { v4 as uuidV4 } from 'uuid';
+import {injectable} from "tsyringe";
 
+@injectable()
 export class UserRepositoryInMemory implements IUserRepository {
     private users: User[] = [];
 
